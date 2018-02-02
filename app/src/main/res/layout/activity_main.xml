@@ -8,14 +8,25 @@
 
     <Button
         android:id="@+id/start_photo_picker_btn"
-        android:text="启动多图选择界面"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="启动多图选择界面" />
 
     <android.support.v7.widget.RecyclerView
-        android:layout_below="@id/start_photo_picker_btn"
         android:id="@+id/img_rv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_below="@id/start_photo_picker_btn" />
+
+    <TextView
+        android:id="@+id/delete_tv"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_alignParentBottom="true"
+        android:background="#aaff0000"
+        android:gravity="center"
+        android:text="拖拽到此处删除"
+        android:textColor="#ffffff"
+        android:visibility="invisible" />
 
 </RelativeLayout>

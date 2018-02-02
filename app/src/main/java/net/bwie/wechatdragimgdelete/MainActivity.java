@@ -9,6 +9,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import net.bwie.wechatdragimgdelete.adapter.ImgAdapter;
 
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import me.iwf.photopicker.PhotoPicker;
 
 /**
- * 今天的另外一个又简单有不重要的东西：评分条RatingBar
+ * 今天的另外一个又简单又不重要的东西：评分条RatingBar
  * <p>
  * 仿微信选择多图，长按图片拖拽删除功能
  * 1、第一个界面：多图选择界面（可以使用第三方框架）
@@ -26,12 +27,14 @@ import me.iwf.photopicker.PhotoPicker;
  * 2.1、给RecyclerView的item添加长点击监听
  * 2.2、使用ItemTouchHelper触摸助手帮我们实现拖拽item
  * 2.3、需要给触摸助手一个回调Callback，我们用来实现拖拽方向，以及实现如何拖拽
+ * 2.4、长按item，显示底部红色删除区域，松手时红色删除区域隐藏
  */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     protected Button mStartPhotoPickerBtn;
     // 展示从多图页面返回的图片
     protected RecyclerView mImgRv;
+    protected TextView mDeleteTv;
     private ImgAdapter mAdapter;
 
     // item拖拽使用的触摸助手
@@ -55,7 +58,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mAdapter = new ImgAdapter(this);
         mImgRv.setAdapter(mAdapter);
 
-        mItemTouchHelper = new ItemTouchHelper(null);
+        final ItemTouchCallback itemTouchCallback = new ItemTouchCallback(mAdapter) {
+            @Override
+            public void onDragStateChanged(boolean isDragging) {
+                mDeleteTv.setVisibility(isDragging ? View.VISIBLE : View.INVISIBLE);
+            }
+
+            @Override
+            public void onPrepareDelete(boolean isPrepareDelete) {
+                mDeleteTv.setText(isPrepareDelete ? "松手删除" : "拖动到此处删除");
+            }
+        };
+        mItemTouchHelper = new ItemTouchHelper(itemTouchCallback);
         // 将触摸助手依附到RecyclerView上（RecyclerView绑定触摸助手）
         mItemTouchHelper.attachToRecyclerView(mImgRv);
         // item点击/长点击监听
@@ -68,10 +82,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onItemLongClick(RecyclerView.ViewHolder holder) {
 //                Toast.makeText(MainActivity.this, "长点击", Toast.LENGTH_LONG).show();
+
+                itemTouchCallback.isUp = false;
+
                 // 拖拽item
                 mItemTouchHelper.startDrag(holder);
+
+                // 展示删除区域
+                mDeleteTv.setVisibility(View.VISIBLE);
             }
         });
+        mDeleteTv = (TextView) findViewById(R.id.delete_tv);
 
     }
 
@@ -108,8 +129,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 for (String path : photos) {
                     Log.d("1511", "path: " + path);
-        }
-    }
+                }
+            }
         }
     }
 }
